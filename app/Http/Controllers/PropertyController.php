@@ -43,11 +43,14 @@ class PropertyController extends Controller
             ->with('subcategories:id,category_id,code,subcatname')
             ->get();
 
-        $offices = Office::select('id', 'office_name')->get();
+        $offices = Office::select('id', 'office_name')->orderBy('office_name', 'asc')->get();
 
-        $acquisitions = Acquisition::select('id', 'name')->get();
+        $acquisitions = Acquisition::select('id', 'name')->orderBy('name', 'asc')->get();
 
-        $employees = Employee::select('id', 'fname', 'lname')->get();
+        $employees = Employee::select('id', 'fname', 'lname')
+            ->orderBy('fname', 'asc')
+            ->orderBy('lname', 'asc')
+            ->get();
 
 
         return inertia('Property/Create', [
