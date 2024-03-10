@@ -25,7 +25,7 @@ class DatabaseSeeder extends Seeder
             OfficeSeeder::class,
             RolesAndPermissionsSeeder::class,
             AcquisitionSeeder::class,
-            // PropertySeeder::class,
+            PropertySeeder::class,
         ]);
     }
 }
