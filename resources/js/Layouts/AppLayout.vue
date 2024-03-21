@@ -5,7 +5,7 @@ import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import ToastList from '@/Components/ToastList.vue';
-import { Link, useRemember } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
 
 const showingNavigationDropdown = ref(false);
 

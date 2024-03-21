@@ -8,9 +8,11 @@ use App\Models\Employee;
 use App\Models\Property;
 use App\Models\Acquisition;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Resources\PropertyResource;
 use App\Http\Requests\StorePropertyRequest;
 use App\Http\Requests\UpdatePropertyRequest;
+use File;
 
 class PropertyController extends Controller
 {
@@ -66,12 +68,30 @@ class PropertyController extends Controller
      */
     public function store(StorePropertyRequest $request)
     {
+        $request->validated();
 
-        // $request->validated();
+        $fields = $request->all();
 
-        $data = Property::create($request->all());
+        if($request->photo) {
+            $destination_path = 'public/uploads/photos';
+            $photo_name = $request->photo->getClientOriginalName();
+            $request->photo->storeAs($destination_path, $photo_name);
+            $fields['photo'] = $photo_name;
+        }
 
-        return response()->json(['data' => $data], 200);
+        if($request->document) {
+            $destination_path = 'public/uploads/documents';
+            $document_name = $request->document->getClientOriginalName();
+            $request->document->storeAs($destination_path, $document_name);
+            $fields['document'] = $document_name;
+        }
+
+        // $doc_path = $request->document->store('uploads/files');
+        // $photo_path = $request->photo->store('uploads/images');
+
+        Property::create($fields);
+
+        return redirect()->route('property.index');
     }
 
     /**
@@ -79,7 +99,13 @@ class PropertyController extends Controller
      */
     public function show(Property $property)
     {
-        //
+        $property->load(['category', 'subcategory', 'acquisition', 'office', 'receivingEmployee', 'assignedEmployee']);
+
+        // dd(PropertyResource::make($property));
+        return inertia('Property/Show', [ 
+            'property' => $property
+            // 'property' => PropertyResource::make($property)
+        ]);
     }
 
     /**
@@ -87,16 +113,26 @@ class PropertyController extends Controller
      */
     public function edit(Property $property)
     {
-        $data = $property->load([
-            'acquisition', 
-            'category', 
-            'subcategory', 
-            'receivingEmployee', 
-            'assignedEmployee', 
-            'office'
-        ]);
+        $categories = Category::select('id', 'code', 'catname')
+            ->with('subcategories:id,category_id,code,subcatname')
+            ->get();
 
-        return response()->json(new PropertyResource($data));
+        $offices = Office::select('id', 'office_name')->orderBy('office_name', 'asc')->get();
+
+        $acquisitions = Acquisition::select('id', 'name')->orderBy('name', 'asc')->get();
+
+        $employees = Employee::select('id', 'fname', 'lname')
+            ->orderBy('fname', 'asc')
+            ->orderBy('lname', 'asc')
+            ->get();
+
+        return inertia('Property/Edit', [
+            'property' => $property,
+            'categories' => $categories,
+            'offices' => $offices,
+            'acquisitions' => $acquisitions,
+            'employees' => $employees,
+        ]);
     }
 
     /**
@@ -114,6 +150,24 @@ class PropertyController extends Controller
      */
     public function destroy(Property $property)
     {
-        //
+        /**
+         * // Not Working
+         * Storage::delete('uploads/photos/' . $property->photo);
+         * Storage::delete('uploads/documents/' . $property->document);
+         */
+
+        File::delete(storage_path('app/public/uploads/photos/'.$property->photo));
+        File::delete(storage_path('app/public/uploads/documents/'.$property->document));
+        
+        $property->delete();
+
+        return back()->with('message', 'Property has been deleted!');
+    }
+
+    public function viewPdf(Property $property)
+    {
+        $path = Storage::path('public/uploads/documents/' . $property->document);
+
+        return response()->file($path);
     }
 }

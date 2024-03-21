@@ -3,7 +3,7 @@ import TextInput from '@/Components/TextInput.vue';
 import PropertyComponent from '@/Components/PropertyComponent.vue';
 import LinkButton from '@/Components/LinkButton.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 
 const props = defineProps({
     properties: Object,
@@ -79,7 +79,8 @@ const props = defineProps({
                                 {{ property.unit_value }} {{ property.measurement_unit }}
                             </td>
                             <td class="px-6 py-4 text-right">
-                                <a href="#" class="font-medium text-blue-600 hover:underline">Edit</a>
+                                <Link :href="route('property.show', property.id)" class="font-medium text-blue-600 hover:underline">Show</Link>
+                                <Link :href="route('property.destroy', property.id)" method="DELETE" as="button" class="font-medium text-red-600 hover:underline">Delete</Link>
                             </td>
                         </tr>
                     </tbody>

@@ -37,12 +37,6 @@ const form = useForm({
     document: '',
 })
 
-const submit = () => {
-    form.post(route('property.store'), {
-        onSuccess: () => form.reset()
-    })
-}
-
 const crumbs = [
     {
         name: "Dashboard",
@@ -99,10 +93,55 @@ const appendSubcategoryCode = (e) => {
         }
     })
 }
+
+const handleDocumentUpload = (e) => {
+    form.document = e.target.files[0];
+}
+
+// handles photo upload
+const photoInput = ref(null);
+const photoPreview = ref(null);
+
+const handlePhotoUpload = () => {
+    const photo = photoInput.value.files[0];
+
+    if (! photo) return;
+
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+        photoPreview.value = e.target.result;
+    };
+
+    reader.readAsDataURL(photo);
+
+    form.photo = photoInput.value.files[0];
+}
+
+const clearPhotoFileInput = () => {
+    if (photoInput.value?.value) {
+        photoInput.value.value = null;
+    }
+};
+
+const submit = () => {
+    // if (photoInput.value) {
+    //     form.photo = photoInput.value.files[0];
+    // }
+    
+    form.post(route('property.store'), {
+        onSuccess: () => {
+            clearPhotoFileInput();
+            form.reset();
+        }
+    })
+}
+
 </script>
 
 <template>
     <Head title="Create Property" />
+
     <AppLayout>
         <div class="w-full py-12 px-8">
             <Breadcrumb :crumbs="crumbs" />
@@ -112,7 +151,7 @@ const appendSubcategoryCode = (e) => {
             <hr>
 
             <div class="flex items-start space-x-4 mt-6">
-                <div class="w-full max-w-xl">
+                <form @submit.prevent="submit" class="w-full max-w-3xl">
                     <div class="mb-4">
                         <InputLabel for="property-name" value="Property name"/>
                         <TextInput id="property-name" v-model="form.item_name" class="w-full text-sm"/>
@@ -154,7 +193,7 @@ const appendSubcategoryCode = (e) => {
                             <InputLabel for="unit-value" value="Unit Value"/>
                             <TextInput
                             id="unit-value"
-                            type="number"
+                            type="text"
                             class="w-full text-sm"
                             v-model="form.unit_value"
                             />
@@ -173,14 +212,21 @@ const appendSubcategoryCode = (e) => {
 
                     <div class="mb-4">
                         <InputLabel for="description" value="Description"/>
-                        <Textarea v-model="form.description" id="description" class="w-full text-sm h-32" />
-                        <!-- <textarea v-model="form.description" id="description" class="w-full text-sm"></textarea> -->
+                        <Textarea v-model="form.description" id="description" class="w-full text-sm h-28" />
                         <InputError :message="form.errors.description"/>
                     </div>
                     
-                </div>
+                    <!-- <hr class="mb-4"> -->
 
-                <div class="w-full max-w-xl">
+                    <div class="mb-4">
+                        <InputLabel for="office" value="Assigned Office"/>
+                        <SelectInput v-model="form.office_id" id="office" class="w-full text-sm">
+                            <option value="">Choose office</option>
+                            <option v-for="office in offices" :key="office.id" :value="office.id">{{ office.office_name }}</option>
+                        </SelectInput>
+                        <InputError :message="form.errors.office_id"/>
+                    </div>
+
                     <div class="mb-4">
                         <InputLabel for="acquisition" value="Acquisition type"/>
                         <SelectInput v-model="form.acquisition_id" id="acquisition" class="w-full text-sm">
@@ -210,8 +256,8 @@ const appendSubcategoryCode = (e) => {
 
                     <div class="mb-4">
                         <InputLabel for="date" value="Acquisition Date"/>
-                        <TextInput id="date" type="date" v-model="form.acquisition_date" class="w-full text-sm"/>
-                        <InputError :message="form.errors.acquisition_date"/>
+                        <TextInput id="date" type="date" v-model="form.date_acquired" class="w-full text-sm"/>
+                        <InputError :message="form.errors.date_acquired"/>
                     </div>
 
                     <div class="mb-4">
@@ -225,11 +271,73 @@ const appendSubcategoryCode = (e) => {
                     </div>
 
                     <div class="mb-4">
-                        <InputLabel for="document" value="Property Document"/>
-                        <input id="document" type="file" class="w-full text-sm"/>
+                        <InputLabel for="document" value="Property Document (Accepts only PDF)"/>
+                        <input 
+                        id="document" 
+                        type="file" 
+                        @input="handleDocumentUpload($event)" 
+                        class="w-full text-sm" 
+                        accept=".pdf"
+                        />
                         <InputError :message="form.errors.document"/>
                     </div>
-                </div>
+
+                    <div class="mb-4">
+                        <p class="block font-medium text-sm text-gray-700">Photo</p>
+
+                        <div v-if="!photoPreview" class="flex items-center justify-center w-full">
+                            <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                                <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                    <svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                                    </svg>
+                                    <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
+                                </div>
+                                <input 
+                                id="dropzone-file" 
+                                ref="photoInput"
+                                type="file" 
+                                @change="handlePhotoUpload"
+                                class="hidden" 
+                                accept="image/png, image/jpeg, image/jpg" 
+                                />
+                            </label>
+                        </div> 
+
+                        <!-- <label for="photo" class="block font-medium text-sm text-gray-700">
+                            <input 
+                            id="photo" 
+                            ref="photoInput"
+                            type="file" 
+                            @change="handlePhotoUpload" 
+                            class="w-full text-sm hidden" 
+                            accept="image/png, image/jpeg, image/jpg"
+                            />
+
+                            Upload photo
+                        </label> -->
+                        
+                        <InputError :message="form.errors.photo"/>
+
+                        <div v-if="photoPreview" class="flex items-center justify-center bg-gray-200 mt-4 w-[300px] h-[300px] rounded-lg overflow-hidden relative">
+
+                            <button v-show="photoPreview" type="button" @click="photoPreview = null" class="absolute top-3 right-3 bg-gray-500 hover:bg-gray-400 p-2 rounded-full">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 stroke-white">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+
+                            <img v-show="photoPreview" :src="photoPreview" alt="user-photo" class="object-cover h-full w-full">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="px-4 py-2 text-white text-sm font-medium bg-blue-600 hover:bg-blue-500 rounded-lg">Add property</button>
+                </form>
+
+                <!-- <div class="w-full max-w-xl">
+                    
+                </div> -->
             </div>
         </div>
     </AppLayout>

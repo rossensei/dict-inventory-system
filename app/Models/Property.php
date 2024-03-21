@@ -8,6 +8,7 @@ use App\Models\Employee;
 use App\Models\Acquisition;
 use App\Models\Subcategory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Property extends Model
@@ -32,6 +33,13 @@ class Property extends Model
         'photo',
         'document',
     ];
+
+    protected $appends = [ 'photo_url' ];
+
+    public function getPhotoUrlAttribute()
+    {
+        return $this->photo ? asset('storage/uploads/photos/' . $this->photo) : null;
+    }
 
     public function category()
     {
@@ -62,4 +70,6 @@ class Property extends Model
     {
         return $this->belongsTo(Employee::class, 'assigned_to');
     }
+
+    
 }
