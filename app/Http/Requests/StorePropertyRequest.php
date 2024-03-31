@@ -22,22 +22,22 @@ class StorePropertyRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'item_name' => 'required',
-            'property_no' => 'required|unique:properties',
-            'category_id' => 'required',
-            'subcategory_id' => 'required',
-            'description' => 'string|required',
-            'serial_no' => 'required|unique:properties',
-            'measurement_unit' => 'required',
-            'unit_value' => 'numeric|required',
-            'acquisition_id' => 'required',
-            'received_from' => 'required',
-            'office_id' => 'required',
-            'assigned_to' => 'required',
-            'date_acquired' => 'date|required',
-            'status' => 'in:Serviceable,Unserviceable|required',
-            'document' => 'required|mimes:pdf',
-            'photo' => 'required|mimes:jpeg,jpg,png|max:5120',
+            'item_name' => ['required','string'],
+            'property_no' => ['required','string','unique:properties'],
+            'category_id' => ['required'],
+            'subcategory_id' => ['required'],
+            'description' => ['required','string'],
+            'serial_no' => ['required','unique:properties'],
+            'measurement_unit' => ['required'],
+            'unit_value' => ['required','numeric'],
+            'acquisition_id' => ['required'],
+            'received_from' => ['required'],
+            'office_id' => ['required'],
+            'assigned_to' => ['required'],
+            'date_acquired' => ['required','date'],
+            'status' => ['required','in:Serviceable,Unserviceable'],
+            'document' => ['sometimes','nullable','file','mimes:pdf','max:2048'],
+            'photo' => ['sometimes','nullable','file','mimes:png,jpeg,jpg','max:5120'],
         ];
     }
 
@@ -53,7 +53,6 @@ class StorePropertyRequest extends FormRequest
             'serial_no.unique' => 'The serial number field has already been taken.',
             'acquisition_id.required' => 'The acquisition field is required.',
             'office_id.required' => 'The office field is required.',
-            // 'received_from.required' => 'The received from field is required.',
         ];
     }
 }

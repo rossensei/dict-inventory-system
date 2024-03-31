@@ -68,9 +68,7 @@ class PropertyController extends Controller
      */
     public function store(StorePropertyRequest $request)
     {
-        $request->validated();
-
-        $fields = $request->all();
+        $fields = $request->validated();
 
         if($request->photo) {
             $destination_path = 'public/uploads/photos';
@@ -140,9 +138,37 @@ class PropertyController extends Controller
      */
     public function update(UpdatePropertyRequest $request, Property $property)
     {
-        // $data = Property::create($request->all());
+        $fields = $request->validated();
 
-        return response()->json(['data' => $request->all(), 'property' => $property], 200);
+        // process the photo
+        if($request->photo) {
+            // delete the old photo from the storage
+            File::delete(storage_path('app/public/uploads/photos/'.$property->photo));
+
+            $destination_path = 'public/uploads/photos';
+            $photo_name = $request->photo->getClientOriginalName();
+            $request->photo->storeAs($destination_path, $photo_name);
+            $fields['photo'] = $photo_name;
+        } else {
+            unset($fields['photo']);
+        }
+
+        // process the document
+        if($request->document) {
+            // delete the old pdf document from the storage
+            File::delete(storage_path('app/public/uploads/documents/'.$property->document));
+            
+            $destination_path = 'public/uploads/documents';
+            $document_name = $request->document->getClientOriginalName();
+            $request->document->storeAs($destination_path, $document_name);
+            $fields['document'] = $document_name;
+        } else {
+            unset($fields['document']);
+        }
+
+        $property->update($fields);
+
+        return redirect(route('property.show', $property->id))->with('message', 'Property has been updated successfully!');
     }
 
     /**
@@ -164,9 +190,9 @@ class PropertyController extends Controller
         return back()->with('message', 'Property has been deleted!');
     }
 
-    public function viewPdf(Property $property)
+    public function viewPdf($filename)
     {
-        $path = Storage::path('public/uploads/documents/' . $property->document);
+        $path = Storage::path('public/uploads/documents/' . $filename);
 
         return response()->file($path);
     }

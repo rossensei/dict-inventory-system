@@ -22,7 +22,7 @@ class EmployeeResource extends JsonResource
             'lname' => $this->lname,
             'address' => $this->address,
             'emp_type' => $this->emp_type,
-            'profile_photo_path' => $this->profile_photo_path,
+            'photo' => $this->photo,
             'status' => $this->status,
             'role' => $this->user->roles[0]->name,
         ];
