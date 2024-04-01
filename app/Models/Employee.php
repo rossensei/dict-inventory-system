@@ -30,9 +30,8 @@ class Employee extends Model
        return $this->belongsTo(User::class);
     }
 
-    public function getProfilePhotoPathUrlAttribute()
+    public function getProfilePhotoUrlAttribute()
     {
-        // $url = $this->itemphoto ? asset("images/item_images/" . $this->itemphoto) : "https://512pixels.net/downloads/macos-wallpapers-thumbs/10-14-Night-Thumb.jpg";
         return $this->profile_photo ? asset('images/profile_pictures/' . $this->profile_photo) : null;
     }
 

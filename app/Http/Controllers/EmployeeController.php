@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Http\Resources\EmployeeResource;
 use App\Http\Requests\StoreEmployeeRequest;
+use App\Http\Requests\UpdateEmployeeRequest;
 
 class EmployeeController extends Controller
 {
@@ -21,6 +22,7 @@ class EmployeeController extends Controller
             ->onEachSide(0);
         return inertia('Employee/Index', [
             'employees' => EmployeeResource::collection($employees)
+            // 'employees' => $employees
         ]);
     }
 
@@ -38,6 +40,8 @@ class EmployeeController extends Controller
     public function store(StoreEmployeeRequest $request)
     {
         $fields = $request->validated();
+        $selected_role = $fields['role'];
+        unset($fields['role']);
         
         // Create User
         $credentials = [
@@ -46,45 +50,16 @@ class EmployeeController extends Controller
         ];
 
         $user = User::create($credentials);
+        $user->assignRole($selected_role);
 
-        if($request->photo) {
+        if($request->profile_photo) {
             $destination_path = 'public/uploads/profile_photos';
-            $photo_name = $request->photo->getClientOriginalName();
-            $request->photo->storeAs($destination_path, $photo_name);
-            $fields['photo'] = $photo_name;
+            $photo_name = $request->profile_photo->getClientOriginalName();
+            $request->profile_photo->storeAs($destination_path, $photo_name);
+            $fields['profile_photo'] = $photo_name;
         }
 
         $user->employee()->create($fields);
-
-        // $user = User::create([
-        //     'username' => $credentials['username'],
-        //     'password' => bcrypt($credentials['password'])
-        // ]);
-
-        // // Create Employee
-
-        // $employee = [
-        //     'id_no' => $request->id_no,
-        //     'fname' => $request->fname,
-        //     'mname' => $request->mname,
-        //     'lname' => $request->lname,
-        //     'address' => $request->address,
-        //     'status' => $request->status,
-        //     'emp_type' => $request->emp_type,
-        // ];
-
-        // if($request->photo) {
-        //     $filename = time().'.'.$request->photo->extension();
-        //     $request->photo->move(public_path('images/profile_pictures'), $filename);
-        //     $employee['profile_photo_path'] = $filename;
-        // }
-
-        // $user->employee()->create($employee);
-
-        // // return inertia('Employee/NewEmployee', [
-        // //     'message' => 'Employee successfully created!',
-        // //     'credentials' => $credentials
-        // // ]);
 
         return redirect(route('employee.index'))->with('success', 'A new employee has been added!');
     }
@@ -110,44 +85,23 @@ class EmployeeController extends Controller
     {
         // dd($employee);
         return inertia('Employee/Edit', [
-            'employee' => $employee
+            'employee' => EmployeeResource::make($employee)
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Employee $employee)
+    public function update(UpdateEmployeeRequest $request, Employee $employee)
     {
-        $request->validate([
-            'id_no' => ['required','numeric', Rule::unique(Employee::class)->ignore($employee->id)],
-            'fname' => 'required|string',
-            'mname' => 'required|string',
-            'lname' => 'required|string',
-            'address' => 'required|string',
-            'emp_type' => 'required|string',
-            'status' => 'required|string',
-            'role' => 'required|string',
-            'photo' => 'image:png,jpeg,jpg|max:2048',
-        ]);
+        $fields = $request->validated();
+        $selected_role = $fields['role'];
+        unset($fields['role']);
 
-        $data = [
-            'id_no' => $request->id_no,
-            'fname' => $request->fname,
-            'mname' => $request->mname,
-            'lname' => $request->lname,
-            'address' => $request->address,
-            'status' => $request->status,
-            'emp_type' => $request->emp_type,
-        ];
+        $id_no = $fields['id_no'];
 
-        if($request->photo) {
-            $filename = time().'.'.$request->photo->extension();
-            $request->photo->move(public_path('images/profile_pictures'), $filename);
-            $data['profile_photo_path'] = $filename;
-        }
+        $user = User::find($employee->user_id);
 
-        $employee->update($data);
 
         return redirect(route('employee.index'))->with('success', 'Employee details successfully updated!');
     }

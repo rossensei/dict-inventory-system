@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Employee;
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreEmployeeRequest extends FormRequest
+class UpdateEmployeeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,7 +24,7 @@ class StoreEmployeeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id_no' => ['required','unique:employees'],
+            'id_no' => ['required',Rule::unique(Employee::class)->ignore($this->employee)],
             'fname' => ['required','string'],
             'mname' => ['required','string'],
             'lname' => ['required','string'],

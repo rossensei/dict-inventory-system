@@ -16,13 +16,15 @@ class EmployeeResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'user_id' => $this->user_id,
             'id_no' => $this->id_no,
             'fname' => $this->fname,
             'mname' => $this->mname,
             'lname' => $this->lname,
             'address' => $this->address,
             'emp_type' => $this->emp_type,
-            'photo' => $this->photo,
+            'profile_photo' => $this->profile_photo,
+            'profile_photo_url' => $this->profile_photo ? asset('storage/uploads/profile_photos/' . $this->profile_photo) : null,
             'status' => $this->status,
             'role' => $this->user->roles[0]->name,
         ];

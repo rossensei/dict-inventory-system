@@ -80,15 +80,11 @@ const updateEmployeeStatus = (employeeId) => {
                                     {{ emp.id_no }}
                                 </th>
                                 <td class="px-6 py-4 flex items-center">
-                                    <div v-show="emp.profile_photo_path" class="rounded-full w-10 h-10 overflow-hidden">
-                                        <img :src="emp.profile_photo_path_url" class="object-cover h-full w-full" alt="profile pic">
+                                    <div v-show="emp.profile_photo_url" class="rounded-full w-10 h-10 overflow-hidden">
+                                        <img :src="emp.profile_photo_url" class="object-cover h-full w-full" alt="profile pic">
                                     </div>
-                                    <FallbackUserPhoto v-show="!emp.profile_photo_path" :firstname="emp.fname" :lastname="emp.lname" />
-                                    <!-- <img v-show="emp.profile_photo_path" :src="emp.profile_photo_path_url" class="rounded-full w-14 h-14" alt="profile pic">
-                                    <img v-show="!emp.profile_photo_path" src="https://i.mydramalist.com/QJ082Y_5c.jpg" class="rounded-full w-14 h-14" alt="profile pic"> -->
-                                    <!-- <p class="flex items-center justify-center ms-6"></p> -->
+                                    <FallbackUserPhoto v-show="!emp.profile_photo_url" :firstname="emp.fname" :lastname="emp.lname" />
 
-                                    <!-- <img class="w-10 h-10 rounded-full" src="/docs/images/people/profile-picture-1.jpg" alt="Jese image"> -->
                                     <div class="ps-3">
                                         <div class="text-base font-medium text-gray-700">{{ `${emp.fname} ${emp.mname[0]}. ${emp.lname}` }}</div>
                                         <div class="font-normal text-gray-500">{{ emp.emp_type }}</div>

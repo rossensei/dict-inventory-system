@@ -335,9 +335,6 @@ const submit = () => {
                     <button type="submit" class="px-4 py-2 text-white text-sm font-medium bg-blue-600 hover:bg-blue-500 rounded-lg">Add property</button>
                 </form>
 
-                <!-- <div class="w-full max-w-xl">
-                    
-                </div> -->
             </div>
         </div>
     </AppLayout>
