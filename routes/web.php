@@ -107,6 +107,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/properties/{property}', [PropertyController::class, 'update'])->name('property.update');
     Route::delete('/properties/{property}', [PropertyController::class, 'destroy'])->name('property.destroy');
     Route::get('/properties/view-pdf/{filename}', [PropertyController::class, 'viewPdf']);
+
+    // Reports
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports');
 });
 
 // require __DIR__.'/auth.php';

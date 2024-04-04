@@ -7,6 +7,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import { computed } from 'vue';
 
 const form = useForm({
     profile_photo: null,
@@ -17,8 +18,25 @@ const form = useForm({
     id_no: '',
     emp_type: '', 
     status: '',
-    role: ''
+    role: '',
+    // username: '',
+    // password: ''
 })
+
+// const username = computed(() => {
+//     return form.id_no;
+// })
+
+// const password = computed(() => {
+//     const trimmedLastName = form.lname.trim();
+//     const passwordSuffix = trimmedLastName.substring(0, 3).toUpperCase();
+
+//     if(trimmedLastName == '' || passwordSuffix == '') {
+//         return '';
+//     }
+
+//     return `${passwordSuffix}_${form.id_no}`;
+// })
 
 const photoPreview = ref(null);
 
@@ -38,6 +56,10 @@ const handlePhotoUpload = (file) => {
 }
 
 const submit = () => {
+
+    // form.username = username.value;
+    // form.password = password.value;
+
     form.post('/employees/create', {
         onSuccess: () => {
             form.reset();
@@ -51,11 +73,12 @@ const submit = () => {
 
     <AppLayout>
         <div class="py-12">
-            <div class="w-full px-12">
+            <div class="w-full px-8">
                 <h1 class="text-2xl text-gray-700 font-bold">Create new employee</h1>
-                <p class="text-sm text-gray-500 mb-8">Lorem ipsum dolor sit amet consectetur adipisicing elit. Temporibus maxime perferendis culpa accusantium expedita nam consequatur aspernatur sequi ullam.</p>
+                <p class="text-sm text-gray-500 mb-8">Ensure all data input are correct before submitting it.</p>
                 
                 <form @submit.prevent="submit" class="max-w-5xl w-full">
+                    <!-- <h1 class="text-lg font-semibold mb-4 text-gray-700">Employee Details</h1> -->
                     <div class="flex sm:flex-col sm:space-y-2 md:space-y-0 md:flex-row md:space-x-4">
                         <div class="w-full">
                             <div class="mb-4">
@@ -101,7 +124,7 @@ const submit = () => {
                                     <option value="1">Active</option>
                                     <option value="0">Inactive</option>
                                 </SelectInput>
-                                <InputError :message="form.errors.id_no" />
+                                <InputError :message="form.errors.status" />
                             </div>
                             <div class="mb-4">
                                 <h3 class="font-medium text-sm text-gray-900">Role</h3>
@@ -131,6 +154,22 @@ const submit = () => {
                             </div>
                         </div>
                     </div>
+
+                    <!-- <hr class="mt-3 mb-3">
+
+                    <div class="w-1/2 mt-4">
+
+                        <h1 class="text-lg font-semibold mb-4 text-gray-700">Default Logon Credentials</h1>
+                        <div class="mb-4">
+                            <label for="username" class="block font-medium text-sm text-gray-700">Username</label>
+                            <input id="username" type="text" :value="username" class="w-full text-sm border-gray-300 hover:border-gray-400 focus:border-sky-500 focus:ring-sky-500 rounded-lg shadow-sm" readonly>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="password" class="block font-medium text-sm text-gray-700">Password</label>
+                            <input id="password" type="text" :value="password" class="w-full text-sm border-gray-300 hover:border-gray-400 focus:border-sky-500 focus:ring-sky-500 rounded-lg shadow-sm" readonly>
+                        </div>
+                    </div> -->
 
                     <button type="submit" class="px-4 py-2 text-sm text-white font-semibold rounded-lg shadow-sm bg-blue-600 hover:bg-blue-500">Submit</button>
                 </form>

@@ -9,6 +9,7 @@ use Illuminate\Validation\Rule;
 use App\Http\Resources\EmployeeResource;
 use App\Http\Requests\StoreEmployeeRequest;
 use App\Http\Requests\UpdateEmployeeRequest;
+use File;
 
 class EmployeeController extends Controller
 {
@@ -41,6 +42,7 @@ class EmployeeController extends Controller
     {
         $fields = $request->validated();
         $selected_role = $fields['role'];
+
         unset($fields['role']);
         
         // Create User
@@ -54,7 +56,7 @@ class EmployeeController extends Controller
 
         if($request->profile_photo) {
             $destination_path = 'public/uploads/profile_photos';
-            $photo_name = $request->profile_photo->getClientOriginalName();
+            $photo_name = time().'.'.$request->profile_photo->extension();
             $request->profile_photo->storeAs($destination_path, $photo_name);
             $fields['profile_photo'] = $photo_name;
         }
@@ -74,7 +76,6 @@ class EmployeeController extends Controller
             'password' => strtoupper(substr($employee->lname, 0, 3)).'_'.$employee->id_no
         ];
 
-        // dd($credentials);
         return inertia('Employee/Credentials', [ 'credentials' => $credentials ]);
     }
 
@@ -98,10 +99,26 @@ class EmployeeController extends Controller
         $selected_role = $fields['role'];
         unset($fields['role']);
 
-        $id_no = $fields['id_no'];
-
         $user = User::find($employee->user_id);
 
+        if($selected_role != $user->getRoleNames()->first()) {
+            $user->roles()->detach();
+            $user->assignRole($selected_role);
+        }
+
+        if($request->profile_photo) {
+
+            if($employee->profile_photo) {
+                File::delete(storage_path('app/public/uploads/profile_photos/'.$employee->profile_photo));
+            }
+
+            $destination_path = 'public/uploads/profile_photos';
+            $photo_name = time().'.'.$request->profile_photo->extension();
+            $request->profile_photo->storeAs($destination_path, $photo_name);
+            $fields['profile_photo'] = $photo_name;
+        }
+
+        $employee->update($fields);
 
         return redirect(route('employee.index'))->with('success', 'Employee details successfully updated!');
     }
@@ -112,6 +129,7 @@ class EmployeeController extends Controller
     public function destroy(Employee $employee)
     {
         $employee->delete();
+        $employee->user()->delete();
 
         return back()->with('success', 'Employee has been deleted!');
     }

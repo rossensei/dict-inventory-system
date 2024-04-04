@@ -14,7 +14,7 @@ const props = defineProps({
 
 const form = useForm({
     _method: 'PUT',
-    photo: null,
+    profile_photo: null,
     fname: props.employee.data.fname, 
     mname: props.employee.data.mname, 
     lname: props.employee.data.lname,
@@ -28,6 +28,7 @@ const form = useForm({
 const photoPreview = ref(null);
 
 const handlePhotoUpload = (file) => {
+    form.profile_photo = file;
     const photo = file;
 
     if (! photo) return;
@@ -51,7 +52,7 @@ const submit = () => {
 
     <AppLayout>
         <div class="py-12">
-            <div class="w-full px-12">
+            <div class="w-full px-8">
                 <h1 class="text-2xl text-gray-700 font-bold mb-8">Edit employee details</h1>
 
                 <form @submit.prevent="submit" class="max-w-5xl w-full">
@@ -127,12 +128,20 @@ const submit = () => {
                                     <img v-if="props.employee.data.profile_photo_url && !photoPreview" :src="props.employee.data.profile_photo_url" alt="user-photo" class="object-cover w-full h-full rounded-lg">
                                     <img v-else :src="photoPreview" alt="user-photo" class="object-cover w-full h-full rounded-lg">
                                 </div>
-                                <InputError :message="form.errors.photo" />
+                                <InputError :message="form.errors.profile_photo" />
                             </div>
                         </div>
                     </div>
 
-                    <button type="submit" class="px-4 py-2 text-sm text-white font-semibold rounded-lg shadow-sm bg-blue-600 hover:bg-blue-500">Submit</button>
+                    <div class="w-1/2 mt-4">
+                        <div class="mb-4">
+                            <InputLabel for="username" value="Username" />
+                            <TextInput id="username" type="text" v-model="form.id_no" class="w-full text-sm" :class="{ 'border-red-600' : form.errors.id_no }" />
+                            <InputError :message="form.errors.id_no" />
+                        </div>
+                    </div>
+
+                    <button type="submit" class="px-4 py-2 text-sm text-white font-semibold rounded-lg shadow-sm bg-blue-600 hover:bg-blue-500" :disabled="form.processing">Save changes</button>
                 </form>
             </div>
         </div>
