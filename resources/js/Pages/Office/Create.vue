@@ -38,12 +38,11 @@ const crumbs = [
     <Head title="New Office" />
     <AppLayout>
         <div class="py-12">
-            <div class="w-full px-12">
+            <div class="w-full px-8">
                 <Breadcrumb :crumbs="crumbs" class="mb-3" />
                 <h1 class="text-2xl text-gray-700 font-bold mb-4">Create new office</h1>
-                <!-- <p class="text-sm text-gray-500 mb-4">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</p> -->
 
-                <form @submit.prevent="submit" class="w-full max-w-2xl">
+                <form @submit.prevent="submit" class="w-full max-w-xl">
                     <div class="mb-4">
                         <InputLabel for="office-name" value="Office name" />
                         <TextInput id="office-name" v-model="form.office_name" class="w-full text-sm" />

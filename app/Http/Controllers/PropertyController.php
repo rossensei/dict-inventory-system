@@ -187,7 +187,7 @@ class PropertyController extends Controller
         
         $property->delete();
 
-        return back()->with('message', 'Property has been deleted!');
+        return back()->with('success', 'Property has been deleted!');
     }
 
     public function viewPdf($filename)

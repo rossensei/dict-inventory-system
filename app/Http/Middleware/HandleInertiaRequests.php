@@ -35,6 +35,8 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user() ? [
                     'id' => $request->user()->id,
                     'username' => $request->user()->username,
+                    'name' => $request->user()->employee->fname . ' ' . $request->user()->employee->lname,
+                    'user_photo_url' => $request->user()->employee->getProfilePhotoUrlAttribute()
                     // 'role' => $request->user()->getRole(),
                     // 'permissions' => $request->user()->getAllPermissions()->pluck('name'),
                 ] : null,
@@ -42,7 +44,6 @@ class HandleInertiaRequests extends Middleware
             'flash' => [
                 'success' => $request->session()->get('success'),
                 'error' => $request->session()->get('error'),
-                'message' => $request->session()->get('message'),
             ],
         ];
     }

@@ -37,7 +37,7 @@ class AcquisitionController extends Controller
 
         Acquisition::create(['name' => $request->name]);
 
-        session()->flash('message', 'New acquisition type has been added!');
+        session()->flash('success', 'New acquisition type has been added!');
     }
 
     /**
@@ -68,7 +68,7 @@ class AcquisitionController extends Controller
 
         $acquisition->update(['name' => $request->name]);
 
-        session()->flash('message', 'Acquisition type has been updated!');
+        session()->flash('success', 'Acquisition type has been updated!');
     }
 
     /**
@@ -76,8 +76,12 @@ class AcquisitionController extends Controller
      */
     public function destroy(Acquisition $acquisition)
     {
+        if($acquisition->properties()->exists()) {
+            return back()->with('error', 'This record has an associated properties');
+        }
+
         $acquisition->delete();
 
-        return back()->with('message', 'Acquisition type successfully removed!');
+        return back()->with('success', 'Acquisition type successfully removed!');
     }
 }

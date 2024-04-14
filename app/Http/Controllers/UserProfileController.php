@@ -14,7 +14,7 @@ class UserProfileController extends Controller
         $authenticatedUser = Auth::user();
 
         $userInfo = Employee::where('user_id', $authenticatedUser->id)
-            ->select('id', 'id_no', 'fname', 'mname', 'lname', 'emp_type', 'address', 'profile_photo_path')
+            ->select('id', 'id_no', 'fname', 'mname', 'lname', 'emp_type', 'address', 'profile_photo')
             ->first();
 
         $credentials = User::where('id', $authenticatedUser->id)

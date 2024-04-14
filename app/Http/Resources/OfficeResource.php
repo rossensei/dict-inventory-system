@@ -20,7 +20,7 @@ class OfficeResource extends JsonResource
             'office_name' => $this->office_name,
             'location' => $this->location,
             'classification' => $this->classification,
-            'created_at' => Carbon::parse($this->created_at)->format('Y-m-d H:i:s'),
+            'created_at' => Carbon::parse($this->created_at)->format('F j, Y'),
         ];
     }
 }

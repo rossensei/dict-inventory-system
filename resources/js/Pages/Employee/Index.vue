@@ -1,41 +1,133 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import Tooltip from '@/Components/Tooltip.vue';
 import Modal from '@/Components/Modal.vue';
+import TextInput from '@/Components/TextInput.vue';
 import FallbackUserPhoto from '@/Components/FallbackUserPhoto.vue';
 import Pagination from '@/Components/Pagination.vue';
-import { ref } from 'vue';
+import debounce from 'lodash/debounce';
+import { ref, watch, computed, onMounted, onUpdated } from 'vue';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
+import { useRemoveEmptyKeys } from '@/composables/util.js';
 
 const props = defineProps({
-    employees: Object
+    employees: Object,
+    filters: Object
 })
 
-// Update Employee Status
-const updateEmployeeStatus = (employeeId) => {
-    router.post('/employees/toggle-status/' + employeeId, {
-        preserveScroll: true,
-    })
+const perPage = ref(props.filters.perPage ?? props.employees.meta.per_page);
+
+const filters = ref({
+    search: props.filters.search,
+    empType: props.filters.empType,
+    status: props.filters.status,
+    role: props.filters.role
+});
+
+watch([() => filters.value.search, () => filters.value.empType, () => filters.value.status, () => filters.value.role], debounce(() => {
+
+    const params = useRemoveEmptyKeys(filters.value);
+
+    router.get(route('employee.index'), params, { preserveState: true, replace: true })
+}, 300), {
+    deep: true
+})
+
+watch(perPage, (newPerPageVal) => {
+
+    filters.value.perPage = newPerPageVal;
+    const params = useRemoveEmptyKeys(filters.value);
+
+    router.get(route('employee.index'), params, { preserveState: true, replace: true })
+})
+
+const clearAllFilters = () => {
+    if(!filters.value.search && !filters.value.empType && !filters.value.status && !filters.value.role) {
+        return;
+    }
+    filters.value.search = null;
+    filters.value.empType = null;
+    filters.value.status = null;
+    filters.value.role = null;
 }
 </script>
 
 <template>
     <Head title="Employees" />
     <AppLayout>
-        <div class="py-12">
-            <div class="w-full px-8">
-                <div class="flex justify-between items-center">
-                    <div>
+        <template #header>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Employees</h2>
+            <p class="text-sm text-gray-500">Manage all the information of the employees.</p>
+        </template>
+        <div class="py-4">
+            <div class="w-full px-6">
+                <div class="flex justify-between items-center mb-4">
+                    <!-- <div>
                         <h1 class="text-2xl text-gray-700 font-bold">Employees</h1>
                         <p class="text-sm text-gray-500 mb-4">Manage all the information of the employees.</p>
-                    </div>
+                    </div> -->
 
                     <Link href="/employees/create" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-sm text-white font-medium rounded-md">Add Employee</Link>
+
+                    <button type="button" @click="clearAllFilters" class="px-4 py-2 bg-transparent hover:bg-gray-200 rounded-lg text-sm font-medium border border-gray-300">Clear filters</button>
                 </div>
     
-                <div class="relative overflow-hidden overflow-x-auto shadow-md sm:rounded-lg">
-                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
+                <div class="relative overflow-hidden overflow-x-auto shadow-md sm:rounded-lg bg-white">
+
+                    <div class="flex items-center justify-between p-4">
+                        <label for="search" class="relative">
+                            <input 
+                            id="search"
+                            type="search"
+                            v-model="filters.search"
+                            class="rounded-lg text-sm pl-8 w-[200px] focus:w-[300px] transition-[width] ease-out border-gray-300" 
+                            placeholder="Search for employee"
+                            >
+                    
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                                </svg>
+                            </span>
+                        </label>
+
+                        <div class="flex items-center divide-x divide-gray-300">
+                            <div class="flex space-x-2 px-4">
+                                <label for="plantilla" class="text-sm">
+                                    <input type="radio" v-model="filters.empType" value="Plantilla" id="plantilla" class="text-sm">
+                                    Plantilla
+                                </label>
+                                <label for="cos" class="text-sm">
+                                    <input type="radio" v-model="filters.empType" value="Contract of Service" id="cos" class="text-sm">
+                                    Contract of Service
+                                </label>
+                            </div>
+    
+                            <div class="flex space-x-2 px-4">
+                                <label for="active" class="text-sm">
+                                    <input type="radio" v-model="filters.status" value="Active" id="active" class="text-sm">
+                                    Active
+                                </label>
+                                <label for="inactive" class="text-sm">
+                                    <input type="radio" v-model="filters.status" value="Inactive" id="inactive" class="text-sm">
+                                    Inactive
+                                </label>
+                            </div>
+                            <div class="flex space-x-2 px-4">
+                                <label for="user" class="text-sm">
+                                    <input type="radio" v-model="filters.role" value="User" id="user" class="text-sm">
+                                    User
+                                </label>
+                                <label for="administrator" class="text-sm">
+                                    <input type="radio" v-model="filters.role" value="Administrator" id="administrator" class="text-sm">
+                                    Administrator
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <table class="w-full text-sm text-left rtl:text-right text-gray-500">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-100">
                             <tr>
                                 <th scope="col" class="px-6 py-3">
                                     ID NO
@@ -58,7 +150,7 @@ const updateEmployeeStatus = (employeeId) => {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="emp in employees.data" :key="emp.id" class="bg-white hover:bg-gray-50">
+                            <tr v-for="emp in employees.data" :key="emp.id" class="bg-white hover:bg-gray-50 border-b">
                                 <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap ">
                                     {{ emp.id_no }}
                                 </th>
@@ -77,10 +169,8 @@ const updateEmployeeStatus = (employeeId) => {
                                     {{ emp.address }}
                                 </td>
                                 <td class="px-6 py-4">
-                                    <label :for="'status-' + emp.id" class="inline-flex items-center mb-5 cursor-pointer">
-                                        <input :id="'status-' + emp.id" type="checkbox" :checked="emp.status" @change="updateEmployeeStatus(emp.id)" class="sr-only peer">
-                                        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:w-5 after:h-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                                    </label>
+                                    <span class="px-3 py-1.5 font-medium text-white text-xs rounded-full"
+                                    :class="{'bg-green-500' : emp.status === 'Active', 'bg-red-500' : emp.status === 'Inactive'}">{{ emp.status }}</span>
                                 </td>
                                 <td class="px-6 py-4">
                                     {{ emp.role}}
@@ -105,11 +195,30 @@ const updateEmployeeStatus = (employeeId) => {
                                     </div>
                                 </td>
                             </tr>
+
+                            <tr v-show="!props.employees.data.length" class="border-b">
+                                <td colspan="6" class="px-6 py-4">No matching results found.</td>
+                            </tr>
                         </tbody>
                     </table>
+
+                    <div class="flex items-center justify-between p-4">
+                        <label for="per-page" class="text-sm flex items-center">
+                            Rows per page:
+                            <select id="per-page" v-model="perPage" class="text-sm rounded-lg shadow-sm ml-2">
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="200">200</option>
+                            </select>
+                    
+                            <span class="ml-2">{{ employees.meta.from ?? 0 }} - {{ employees.meta.to ?? 0 }} entries of {{ employees.meta.total ?? 0 }}</span>
+                        </label>
+
+                        <Pagination :meta="employees.meta" :links="employees.links" />
+                    </div>
                 </div>
 
-                <!-- <Pagination class="mt-4" :data="employees" /> -->
             </div>
         </div>
     </AppLayout>

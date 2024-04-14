@@ -52,7 +52,7 @@ class CategoryController extends Controller
 
         Category::create($request->all());
 
-        return redirect(route('category.index'))->with('message', 'Category successfully created!');
+        return redirect(route('category.index'))->with('success', 'Category successfully created!');
     }
 
     /**
@@ -94,7 +94,7 @@ class CategoryController extends Controller
     public function destroy(Category $category)
     {
         if($category->subcategories()->exists() || $category->properties()->exists()) {
-            return back()->with('message', 'Error deleting category.');
+            return back()->with('error', 'Error deleting category.');
         } else {
             $category->delete();
             return back()->with('success', 'Category has been removed.');

@@ -9,7 +9,7 @@ defineProps({
 
 <template>
 
-    <nav class="flex bg-white p-4 rounded-lg shadow-sm" aria-label="Breadcrumb">
+    <nav class="bg-gray-200 p-2 rounded-lg shadow-sm border-2 w-[300px]" aria-label="Breadcrumb">
         <ol class="inline-flex items-center space-x-1 md:space-x-3">
           <li class="inline-flex items-center" v-for="(item, index) in crumbs" :key="index">   
             <div class="flex items-center">
@@ -18,11 +18,11 @@ defineProps({
               </svg> -->
               <span v-if="index !== crumbs.length && index !== 0" class="text-gray-400">/</span>
 
-              <Link v-if="index < (crumbs.length - 1)" :href="item.url" class="ml-1 text-sm font-normal text-gray-500 hover:text-gray-700 md:ml-2">              
+              <Link v-if="index < (crumbs.length - 1)" :href="item.url" class="ml-1 text-sm font-medium text-gray-500 hover:text-gray-700 md:ml-2">              
                 {{ item.name }}            
               </Link>
 
-              <span v-else class="ml-1 text-sm font-medium text-gray-700 md:ml-2">{{ item.name }}</span>
+              <span v-else class="ml-1 text-sm font-semibold text-gray-700 md:ml-2">{{ item.name }}</span>
             </div>
           </li>
         </ol>

@@ -5,7 +5,7 @@ import SelectInput from '@/Components/SelectInput.vue';
 import FileInput from '@/Components/FileInput.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, useForm, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
 const props = defineProps({
@@ -51,11 +51,24 @@ const submit = () => {
     <Head :title="`${props.employee.data.lname}, ${props.employee.data.fname}, ${props.employee.data.mname[0]}.`" />
 
     <AppLayout>
-        <div class="py-12">
-            <div class="w-full px-8">
-                <h1 class="text-2xl text-gray-700 font-bold mb-8">Edit employee details</h1>
-
+        <template #header>
+            <div class="flex items-center divide-x divide-gray-200">
+                <div class="px-2">
+                    <Link :href="route('employee.index')" class="h-8 w-8 rounded-lg hover:bg-gray-200 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 15.75 3 12m0 0 3.75-3.75M3 12h18" />
+                          </svg>                          
+                    </Link>
+                </div>
+                <div class="px-2">
+                    <h2 class="font-semibold text-xl text-gray-800 leading-tight">Edit Employee</h2>
+                </div>
+            </div>
+        </template>
+        <div class="py-4">
+            <div class="w-full px-6">
                 <form @submit.prevent="submit" class="max-w-5xl w-full">
+                    <p class="text-md font-medium text-gray-700 mb-3">Employee information</p>
                     <div class="flex sm:flex-col sm:space-y-2 md:space-y-0 md:flex-row md:space-x-4">
                         <div class="w-full">
                             <div class="mb-4">
@@ -98,8 +111,8 @@ const submit = () => {
                                 <InputLabel for="status" value="Status" />
                                 <SelectInput id="status" v-model="form.status" class="w-full text-sm" :class="{ 'border-red-600' : form.errors.status }">
                                     <option value="">Select status</option>
-                                    <option value="1">Active</option>
-                                    <option value="0">Inactive</option>
+                                    <option value="Active">Active</option>
+                                    <option value="Inactive">Inactive</option>
                                 </SelectInput>
                                 <InputError :message="form.errors.id_no" />
                             </div>
@@ -130,14 +143,6 @@ const submit = () => {
                                 </div>
                                 <InputError :message="form.errors.profile_photo" />
                             </div>
-                        </div>
-                    </div>
-
-                    <div class="w-1/2 mt-4">
-                        <div class="mb-4">
-                            <InputLabel for="username" value="Username" />
-                            <TextInput id="username" type="text" v-model="form.id_no" class="w-full text-sm" :class="{ 'border-red-600' : form.errors.id_no }" />
-                            <InputError :message="form.errors.id_no" />
                         </div>
                     </div>
 

@@ -24,7 +24,7 @@ class UserEmployeeSeeder extends Seeder
                     'lname' => 'Flores',
                     'emp_type' => 'Plantilla',
                     'address' => 'Pinayagan Sur, Tubigon, Bohol.',
-                    'status' => 1,
+                    'status' => 'Active',
                 ],
             ],
             [
@@ -37,7 +37,7 @@ class UserEmployeeSeeder extends Seeder
                     'lname' => 'Estillore',
                     'emp_type' => 'Plantilla',
                     'address' => 'Cogon, Inabanga, Bohol.',
-                    'status' => 1,
+                    'status' => 'Active',
                 ],
             ],
             [
@@ -50,7 +50,7 @@ class UserEmployeeSeeder extends Seeder
                     'lname' => 'Balili',
                     'emp_type' => 'Plantilla',
                     'address' => 'Ilijan Norte, Tubigon, Bohol.',
-                    'status' => 1,
+                    'status' => 'Active',
                 ],
             ],
             [
@@ -63,7 +63,7 @@ class UserEmployeeSeeder extends Seeder
                     'lname' => 'Calunia',
                     'emp_type' => 'Plantilla',
                     'address' => 'Guiwanon, Tubigon, Bohol.',
-                    'status' => 1,
+                    'status' => 'Active',
                 ],
             ],
             [
@@ -76,7 +76,7 @@ class UserEmployeeSeeder extends Seeder
                     'lname' => 'Doe',
                     'emp_type' => 'Contract of Service',
                     'address' => 'Los Angeles, California',
-                    'status' => 0,
+                    'status' => 'Inactive',
                 ],
             ],
             [
@@ -89,7 +89,7 @@ class UserEmployeeSeeder extends Seeder
                     'lname' => 'Masibay',
                     'emp_type' => 'Plantilla',
                     'address' => 'Antequera, Bohol',
-                    'status' => 1,
+                    'status' => 'Active',
                 ],
             ],
         ];

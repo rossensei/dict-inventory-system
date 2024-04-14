@@ -1,25 +1,20 @@
 <script setup>
-import { ref, onMounted } from 'vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
+import FallbackUserPhoto from '@/Components/FallbackUserPhoto.vue';
 import NavMenu from '@/Components/NavMenu.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import ToastList from '@/Components/ToastList.vue';
-import FlashMessages from '@/Components/FlashMessages.vue';
 import { Link } from '@inertiajs/vue3';
-
-const showingNavigationDropdown = ref(false);
-
 </script>
 
 <template>
     <div>
         <!-- Toast -->
-        <!-- <ToastList /> -->
-        <FlashMessages />
+        <ToastList />
 
-        <div class="flex items-start min-h-screen bg-gray-50">
-            <nav class="sticky top-0 z-10 bg-[#087ec2ff] min-h-screen w-64 rounded-r-lg shadow-md">
+        <div class="flex items-start min-h-screen bg-stone-50">
+            <nav class="sticky top-0 z-10 bg-[#087ec2ff] min-h-screen w-64 shadow-md">
                 <div class="relative p-4">
                     <!-- Logo branding -->
                     <Link :href="route('dashboard')" class="w-full block space-y-2">
@@ -37,19 +32,27 @@ const showingNavigationDropdown = ref(false);
                             <Dropdown align="right" width="48">
                                 <template #trigger>
                                     <span class="inline-flex items-center rounded-md">
-                                        <button
+                                        <!-- <button
                                             type="button"
                                             class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-transparent hover:bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150"
                                         >
-                                            {{ $page.props.auth.user.username }}
+                                            {{ $page.props.auth.user.name }}
 
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
                                             <path fill-rule="evenodd" d="M11.47 4.72a.75.75 0 0 1 1.06 0l3.75 3.75a.75.75 0 0 1-1.06 1.06L12 6.31 8.78 9.53a.75.75 0 0 1-1.06-1.06l3.75-3.75Zm-3.75 9.75a.75.75 0 0 1 1.06 0L12 17.69l3.22-3.22a.75.75 0 1 1 1.06 1.06l-3.75 3.75a.75.75 0 0 1-1.06 0l-3.75-3.75a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
                                             </svg>
+                                        </button> -->
+
+                                        <button type="button" class="inline-flex items-center text-xs text-gray-500 font-medium uppercase">
+                                            {{ $page.props.auth.user.name }}
+                                            <div class="w-[38px] h-[38px] rounded-full overflow-hidden ml-1">
+                                                <img v-if="$page.props.auth.user.user_photo_url" :src="$page.props.auth.user.user_photo_url" alt="user-photo" class="w-full h-full object-cover">
+                                                <img v-else src="" alt="user-photo" class="w-full h-full object-cover text-sm">
+                                            </div>
                                         </button>
-
-
                                     </span>
+
+                                    
                                 </template>
 
                                 <template #content>
@@ -78,12 +81,14 @@ const showingNavigationDropdown = ref(false);
 
                 </div>
                 <header class="" v-if="$slots.header">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                    <div class="w-full px-6">
                         <slot name="header" />
                     </div>
                 </header>
                 <main>
-                    <slot />
+                    <Transition name="fade" mode="out-in" appear>
+                        <slot />
+                    </Transition>
                 </main>
             </div>
         </div>
@@ -102,5 +107,15 @@ const showingNavigationDropdown = ref(false);
 .slide-enter-from,
 .slide-leave-to {
     transform: translateY(-20px);
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.5s ease-out;
 }
 </style>

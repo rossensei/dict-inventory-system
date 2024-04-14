@@ -16,14 +16,54 @@ class EmployeeController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $employees = Employee::with(['user:id', 'user.roles:id,name'])
-            ->paginate(6)
-            ->onEachSide(0);
+
+        $per_page =  $request->input('perPage', 10);
+
+        $baseQuery = Employee::query()
+            ->with(['user:id', 'user.roles:id,name']);
+
+
+        $baseQuery->when($request->input('search'), function ($query, $search) {
+            $query->where(function ($query) use ($search) {
+                $query->where('fname', 'LIKE', "%{$search}%")
+                ->orWhere('mname', 'LIKE', "%{$search}%")
+                ->orWhere('lname', 'LIKE', "%{$search}%")
+                ->orWhere('address', 'LIKE', "%{$search}%")
+                ->orWhere('id_no', 'LIKE', "%{$search}%");
+            });
+        });
+
+        $baseQuery->when($request->input('empType'), function ($query, $empType) {
+            if(strcasecmp($empType, 'Plantilla') === 0) {
+                $query->where('emp_type', 'Plantilla');
+            } else {
+                $query->where('emp_type', 'Contract of Service');
+            }
+        });
+
+        $baseQuery->when($request->input('status'), function ($query, $status) {
+            if($status == 'Active') {
+                $query->where('status', 'Active');
+            } else {
+                $query->where('status', 'Inactive');
+            }
+        });
+
+        $baseQuery->when($request->input('role'), function ($query, $role) {
+            $query->whereHas('user.roles', function ($query) use ($role) {
+                $query->where('name', $role);
+            });
+        });
+
+        $employees = $baseQuery->paginate($per_page)
+            ->withQueryString();
+
+
         return inertia('Employee/Index', [
-            'employees' => EmployeeResource::collection($employees)
-            // 'employees' => $employees
+            'employees' => EmployeeResource::collection($employees),
+            'filters' => $request->only(['search', 'perPage', 'empType', 'status', 'role'])
         ]);
     }
 
@@ -111,11 +151,13 @@ class EmployeeController extends Controller
             if($employee->profile_photo) {
                 File::delete(storage_path('app/public/uploads/profile_photos/'.$employee->profile_photo));
             }
-
+            
             $destination_path = 'public/uploads/profile_photos';
             $photo_name = time().'.'.$request->profile_photo->extension();
             $request->profile_photo->storeAs($destination_path, $photo_name);
             $fields['profile_photo'] = $photo_name;
+        } else {
+            unset($fields['profile_photo']);
         }
 
         $employee->update($fields);
@@ -128,6 +170,10 @@ class EmployeeController extends Controller
      */
     public function destroy(Employee $employee)
     {
+        if($employee->receivedProperties()->exists() || $employee->assignedProperties()->exists()) {
+            return back()->with('error', 'You cannot delete this employee!');
+        }
+
         $employee->delete();
         $employee->user()->delete();
 

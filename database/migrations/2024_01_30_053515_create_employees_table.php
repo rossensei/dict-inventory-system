@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('lname');
             $table->string('emp_type');
             $table->string('address');
-            $table->boolean('status')->default(1);
+            $table->string('status');
             $table->string('profile_photo')->nullable();
             $table->timestamps();
         });

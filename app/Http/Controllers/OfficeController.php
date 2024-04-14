@@ -15,18 +15,27 @@ class OfficeController extends Controller
      */
     public function index(Request $request)
     {
+        $per_page = $request->input('perPage', 5);
+
         $baseQuery = Office::query();
 
-        if($request->search) {
-            $baseQuery->where('office_name', 'LIKE', "%{$request->search}%");
-        }
+        $baseQuery->when($request->input('search'), function ($query, $search) {
+            $query->where(function ($query) use ($search) {
+                $query->where('office_name', 'LIKE', "%{$search}%")
+                    ->orWhere('classification', 'LIKE', "%{$search}%")
+                    ->orWhere('location', 'LIKE', "%{$search}%");
+            });
+        });
 
-        if($request->classification) {
-            $baseQuery->where('classification', 'LIKE', "%{$request->classification}%");
-            // $baseQuery->whereIn('classification', $request->classifications);
-        }
+        $baseQuery->when($request->input('classification'), function ($query, $classification) {
+            if($classification === 'DICT-DTC') {
+                $query->where('classification', 'DICT-DTC');
+            } else {
+                $query->where('classification', 'Tech4ED Center');
+            }
+        });
 
-        $collection = $baseQuery->paginate(8)->withQueryString();
+        $collection = $baseQuery->paginate($per_page)->withQueryString();
 
         $offices = OfficeResource::collection($collection);
 

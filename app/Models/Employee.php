@@ -32,7 +32,7 @@ class Employee extends Model
 
     public function getProfilePhotoUrlAttribute()
     {
-        return $this->profile_photo ? asset('images/profile_pictures/' . $this->profile_photo) : null;
+        return $this->profile_photo ? asset('storage/uploads/profile_photos/' . $this->profile_photo) : null;
     }
 
     public function receivedProperties()
