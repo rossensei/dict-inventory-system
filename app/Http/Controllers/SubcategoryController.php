@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Subcategory;
 use Illuminate\Http\Request;
 
@@ -18,17 +19,27 @@ class SubcategoryController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Category $category)
     {
-        //
+        return inertia('Category/NewSubcategory', ['category' => $category]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, Category $category)
     {
-        //
+        $request->validate([
+            'subcatname' => 'required|string|unique:subcategories',
+            'code' => 'required|unique:subcategories'
+        ], [
+            'subcatname.required' => 'The subcategory name field is required.',
+            'subcatname.unique' => 'The subcategory name is already taken.',
+        ]);
+
+        Subcategory::create($request->all());
+
+        return redirect(route('category.index'))->with('success', 'Subcategory has been created!');
     }
 
     /**

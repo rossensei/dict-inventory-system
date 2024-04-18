@@ -22,7 +22,7 @@ const submit = () => {
 }
 </script>
 <template>
-    <Head title="Create Category" />
+    <Head title="New Category" />
 
     <AppLayout>
         <template #header>
@@ -35,27 +35,29 @@ const submit = () => {
                     </Link>
                 </div>
                 <div class="px-2">
-                    <h2 class="font-semibold text-xl text-gray-800 leading-tight">Create Category</h2>
+                    <h2 class="font-semibold text-xl text-gray-800 leading-tight">Add new category</h2>
                 </div>
             </div>
         </template>
-        <div class="w-full px-6">
-            <form @submit.prevent="submit" class="max-w-xl">
-                <div class="mb-4">
-                    <InputLabel for="catname" value="Category name" />
-                    <TextInput v-model="form.catname" id="catname" class="w-full text-sm" />
-                    <InputError :message="form.errors.catname" />
-                </div>
-                <div class="mb-4">
-                    <InputLabel for="code" value="Code" />
-                    <TextInput v-model="form.code" id="code" class="w-full text-sm" />
-                    <InputError :message="form.errors.code" />
-                </div>
+        <div class="py-4">
+            <div class="w-full px-6">
+                <form @submit.prevent="submit" class="max-w-xl">
+                    <div class="mb-4">
+                        <InputLabel for="catname" value="Category name" />
+                        <TextInput v-model="form.catname" id="catname" class="w-full text-sm" />
+                        <InputError :message="form.errors.catname" />
+                    </div>
+                    <div class="mb-4">
+                        <InputLabel for="code" value="Code" />
+                        <TextInput v-model="form.code" id="code" class="w-full text-sm" />
+                        <InputError :message="form.errors.code" />
+                    </div>
 
-                <button type="submit" class="px-4 py-2 bg-blue-700 hover:bg-blue-600 text-sm text-white rounded-lg inline-flex items-center">
-                    Submit
-                </button>
-            </form>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-sm text-white font-medium rounded-lg inline-flex items-center">
+                        Submit
+                    </button>
+                </form>
+            </div>
         </div>
     </AppLayout>
 </template>

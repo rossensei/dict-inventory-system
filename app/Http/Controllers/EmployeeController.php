@@ -174,6 +174,10 @@ class EmployeeController extends Controller
             return back()->with('error', 'You cannot delete this employee!');
         }
 
+        if($employee->profile_photo) {
+            File::delete(storage_path('app/public/uploads/profile_photos/'.$employee->profile_photo));
+        }
+
         $employee->delete();
         $employee->user()->delete();
 

@@ -43,7 +43,7 @@ const pageNumber = ref(props.meta.per_page)
               >{{ link.label }}</Link
             >
 
-            <span v-else class="relative block rounded bg-transparent px-3 py-1.5 text-sm text-surface transition duration-300 hover:bg-neutral-100 focus:bg-neutral-100 focus:text-primary-700 focus:outline-none active:bg-neutral-100 active:text-primary-700">{{ link.label }}</span>
+            <span v-else class="relative block rounded bg-transparent px-3 py-1.5 text-sm bg-neutral-200 text-gray-900 font-medium">{{ link.label }}</span>
           </li>
           <li>
             <Link

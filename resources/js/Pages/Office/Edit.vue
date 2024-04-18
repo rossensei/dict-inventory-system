@@ -2,9 +2,8 @@
 import TextInput from '@/Components/TextInput.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';
-import Breadcrumb from '@/Components/Breadcrumb.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, useForm, Link } from '@inertiajs/vue3';
 
 const props = defineProps({
     office: Object,
@@ -21,33 +20,31 @@ const submit = () => {
         onSuccess: () => form.reset()
     })
 }
-
-const crumbs = [
-    {
-        name: "Dashboard",
-        url: route('dashboard'),
-    },
-    {
-        name: "Offices",
-        url: route('office.index'),
-    },
-    {
-        name: "Edit office",
-        url: null,
-    },
-];
 </script>
 
 <template>
     <Head title="Edit Office" />
-    <AppLayout>
-        <div class="py-12">
-            <div class="w-full px-8">
-                <Breadcrumb :crumbs="crumbs" class="mb-3" />
-                <h1 class="text-2xl text-gray-700 font-bold mb-4">Edit office details</h1>
-                <!-- <p class="text-sm text-gray-500 mb-4">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</p> -->
 
-                <form @submit.prevent="submit" class="w-full max-w-xl">
+    <AppLayout>
+        <template #header>
+            <div class="flex items-center divide-x divide-gray-200">
+                <div class="px-2">
+                    <Link :href="route('office.index')" class="h-8 w-8 rounded-lg hover:bg-gray-200 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 15.75 3 12m0 0 3.75-3.75M3 12h18" />
+                          </svg>                          
+                    </Link>
+                </div>
+                <div class="px-2">
+                    <h2 class="font-semibold text-xl text-gray-800 leading-tight">Edit office details</h2>
+                </div>
+            </div>
+        </template>
+
+        <div class="py-4">
+            <div class="w-full px-6">
+
+                <form @submit.prevent="submit" class="w-full max-w-xl mt-4">
                     <div class="mb-4">
                         <InputLabel for="office-name" value="Office name" />
                         <TextInput id="office-name" v-model="form.office_name" class="w-full text-sm" />

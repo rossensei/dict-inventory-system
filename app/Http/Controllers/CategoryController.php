@@ -14,18 +14,21 @@ class CategoryController extends Controller
      */
     public function index(Request $request)
     {
-        $baseQuery = Category::query();
+        // $baseQuery = Category::query();
 
-        if($request->search) {
-            $baseQuery->where('code', 'LIKE', "%".$request->search."%")
-                ->orWhere('catname', 'LIKE', "%".$request->search."%");
-        }
+        // if($request->search) {
+        //     $baseQuery->where('code', 'LIKE', "%".$request->search."%")
+        //         ->orWhere('catname', 'LIKE', "%".$request->search."%");
+        // }
 
-        $categories = CategoryResource::collection($baseQuery->withCount('subcategories')->get());
+        $categories = CategoryResource::collection(
+            Category::with('subcategories')
+            ->orderBy('catname')
+            ->get());
 
         return inertia('Category/Index', [
             'categories' => $categories, 
-            'filters' => $request->only(['search'])
+            // 'filters' => $request->only(['search'])
         ]);
     }
 
@@ -44,7 +47,7 @@ class CategoryController extends Controller
     {
         $request->validate([
             'catname' => 'required|string|unique:categories',
-            'code' => 'required|numeric|unique:categories'
+            'code' => 'required|unique:categories'
         ], [
             'catname.required' => 'The category name field is required.',
             'catname.unique' => 'The category name is already taken.',
@@ -78,7 +81,7 @@ class CategoryController extends Controller
     {
         $request->validate([
             'catname' => ['required', 'string', Rule::unique(Category::class)->ignore($category->id)],
-            'code' => ['required', 'numeric', Rule::unique(Category::class)->ignore($category->id)]
+            'code' => ['required', Rule::unique(Category::class)->ignore($category->id)]
         ], [
             'catname.required' => 'The category name field is required.',
         ]);

@@ -15,7 +15,7 @@ class OfficeController extends Controller
      */
     public function index(Request $request)
     {
-        $per_page = $request->input('perPage', 5);
+        $per_page = $request->input('perPage', 10);
 
         $baseQuery = Office::query();
 

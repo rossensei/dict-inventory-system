@@ -13,52 +13,48 @@ const props = defineProps({
     filters: Object,
 })
 
-const params = ref({
+const perPage = ref(props.filters.perPage ?? props.offices.meta.per_page);
+
+const filters = ref({
     search: props.filters?.search,
-    classification: props.filters?.classification,
-})
+    classification: props.filters?.classification
+});
 
-const search = ref(props.filters?.search);
-const classification = ref(props.filters?.classification);
-const perPage = ref(props.filters?.perPage ?? '');
+watch([ () => filters.value.search, () => filters.value.classification], debounce(() => {
 
-watch([search, classification, perPage], debounce(([newSearchVal, newClassificationVal, newPerPageVal]) => {
-    const data = {
-        search: newSearchVal,
-        classification: newClassificationVal,
-        perPage: newPerPageVal,
-    };
-
-    const params = useRemoveEmptyKeys(data);
+    const params = useRemoveEmptyKeys(filters.value);
 
     router.get(route('office.index'), params, { preserveState: true, replace: true });
 }, 300))
 
+watch(perPage, (newPerPageVal) => {
+    filters.value.perPage = newPerPageVal;
+    const params = useRemoveEmptyKeys(filters.value);
+
+    router.get(route('office.index'), params, { preserveState: true, replace: true });
+})
 </script>
 
 <template>
     <Head title="Manage Offices" />
 
     <AppLayout>
-        <div class="py-12">
-            <div class="w-full px-8">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <h1 class="text-2xl text-gray-700 font-bold">Manage Offices</h1>
-                        <p class="text-sm text-gray-500 mb-4">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</p>
-                    </div>
+        <template #header>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Manage Offices</h2>
+            <p class="text-sm text-gray-500">Manage list of existing offices</p>
+        </template>
+        <div class="py-4">
+            <div class="w-full px-6">
+                <Link :href="route('office.create')" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg shadow-sm">New Office</Link>
 
-                    <Link :href="route('office.create')" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg shadow-sm">New Office</Link>
-                </div>
-
-                <div class="relative overflow-hidden overflow-x-auto shadow-md sm:rounded-lg bg-white">
+                <div class="relative overflow-hidden overflow-x-auto shadow-md sm:rounded-lg bg-white mt-4">
 
                     <div class="flex items-center justify-between p-4">
                         <label for="search" class="relative">
                             <input 
                             id="search"
                             type="search"
-                            v-model="search"
+                            v-model="filters.search"
                             class="rounded-lg text-sm pl-8 w-[300px] focus:w-[400px] transition-[width] ease-out border-gray-300" 
                             placeholder="Search office by name, classification, location.."
                             >
@@ -74,15 +70,15 @@ watch([search, classification, perPage], debounce(([newSearchVal, newClassificat
                             <div class="flex space-x-4">
                                 <!-- <span class="text-sm text-gray-700 font-semibold">Employee Type:</span> -->
                                 <label for="show-all" class="text-sm font-semibold text-gray-700 flex items-center">
-                                    <input type="radio" v-model="classification" value="" id="show-all" class="text-sm mr-1">
+                                    <input type="radio" v-model="filters.classification" value="" id="show-all" class="text-sm mr-1">
                                     Show All
                                 </label>
                                 <label for="DICT-DTC" class="text-sm font-semibold text-gray-700 flex items-center">
-                                    <input type="radio" v-model="classification" value="DICT-DTC" id="DICT-DTC" class="text-sm mr-1">
+                                    <input type="radio" v-model="filters.classification" value="DICT-DTC" id="DICT-DTC" class="text-sm mr-1">
                                     DICT-DTC
                                 </label>
                                 <label for="ted-center" class="text-sm font-semibold text-gray-700 flex items-center">
-                                    <input type="radio" v-model="classification" value="Tech4ED Center" id="ted-center" class="text-sm mr-1">
+                                    <input type="radio" v-model="filters.classification" value="Tech4ED Center" id="ted-center" class="text-sm mr-1">
                                     Tech4ED Center
                                 </label>
                             </div>
@@ -151,11 +147,10 @@ watch([search, classification, perPage], debounce(([newSearchVal, newClassificat
                         <label for="per-page" class="text-sm flex items-center">
                             Rows per page:
                             <select id="per-page" v-model="perPage" class="text-sm rounded-lg shadow-sm ml-2">
-                                <option value="">{{ offices.meta.per_page }}</option>
                                 <option value="10">10</option>
-                                <option value="15">15</option>
-                                <option value="20">20</option>
                                 <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="200">200</option>
                             </select>
                     
                             <span class="ml-2">{{ offices.meta.from ?? 0 }} - {{ offices.meta.to ?? 0 }} entries of {{ offices.meta.total ?? 0 }}</span>

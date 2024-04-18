@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\OfficeController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\EmployeeController;
@@ -65,9 +66,12 @@ Route::middleware('auth')->group(function () {
     Route::patch('/categories/update/{category}', [CategoryController::class, 'update'])->name('category.update');
     Route::delete('/categories/remove/{category}', [CategoryController::class, 'destroy'])->name('category.destroy');
 
+    Route::get('/categories/{category}/new-subcategory', [SubcategoryController::class, 'create'])->name('subcategory.create');
+    Route::post('/categories/{category}', [SubcategoryController::class, 'store'])->name('subcategory.store');
+
     Route::get('/subcategories', [SubcategoryController::class, 'index'])->name('subcategory.index');
     // Route::post('/categories/{category}/subcategories/new-subcategory', [SubcategoryController::class, 'store'])->name('subcategory.store');
-    Route::post('/subcategories/new-subcategory', [SubcategoryController::class, 'store'])->name('subcategory.store');
+    // Route::post('/subcategories/new-subcategory', [SubcategoryController::class, 'store'])->name('subcategory.store');
     Route::patch('/subcategories/{subcategory}/update', [SubcategoryController::class, 'update'])->name('subcategory.update');
     Route::delete('/subcategories/{subcategory}/delete', [SubcategoryController::class, 'destroy'])->name('subcategory.destroy');
 
