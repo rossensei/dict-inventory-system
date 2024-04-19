@@ -13,7 +13,10 @@ class AcquisitionController extends Controller
      */
     public function index()
     {
-        $acquisitions = Acquisition::select('id', 'name')->get();
+        $acquisitions = Acquisition::select('id', 'name')
+        ->withCount('properties')
+        ->orderBy('name', 'asc')
+        ->get();
         
         return inertia('Acquisition/Index', [
             'acquisitions' => $acquisitions

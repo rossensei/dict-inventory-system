@@ -1,7 +1,7 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
 import TextInput from '@/Components/TextInput.vue';
-import AcquisitionItem from './components/AcquisitionItem.vue';
+import AcquisitionList from '@/Components/AcquisitionList.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
@@ -22,16 +22,17 @@ const submit = () => {
 </script>
 
 <template>
-
     <Head title="Acquisition Types" />
+
     <AppLayout>
-        <div class="py-12">
-            <div class="w-full px-12">
-                <div>
-                    <h1 class="text-2xl text-gray-700 font-bold">Acquisitions</h1>
-                    <p class="text-gray-900 mb-4">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quam ipsa ut sunt eveniet, libero nobis enim.</p>
-                </div>
-                <form @submit.prevent="submit" class="flex items-center space-x-3 max-w-2xl py-2">
+        <template #header>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Acquisitions</h2>
+            <p class="text-sm text-gray-500">Manage list of acquisition types</p>
+        </template>
+
+        <div class="py-4">
+            <div class="w-full px-6">
+                <form @submit.prevent="submit" class="flex items-center space-x-3 max-w-xl py-2">
                     <label for="new-acquisition" class="relative w-full">
 
                         <span class="absolute left-3 text-gray-400 top-1/2 -translate-y-1/2">
@@ -44,7 +45,7 @@ const submit = () => {
                         v-model="form.name"
                         id="new-acquisition"
                         class="w-full text-sm pl-8"
-                        placeholder="Add new acquisition type.."
+                        placeholder="Enter new acquisition type.."
 
                         />
                     </label>
@@ -54,14 +55,7 @@ const submit = () => {
 
 
 
-                <div class="mt-1 border max-w-2xl rounded-lg shadow-sm bg-white">
-
-                    <ul class="max-w-2xl divide-y divide-gray-200">
-                        <li v-for="acquisition in acquisitions" :key="acquisition.id" class="pb-3 sm:pb-4 hover:bg-slate-100 pt-3 px-3">
-                            <AcquisitionItem :acquisition="acquisition" />
-                        </li>
-                    </ul>
-                </div>
+                <AcquisitionList :acquisitions="acquisitions" />
             </div>
         </div>
     </AppLayout>
